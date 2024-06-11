@@ -1,0 +1,372 @@
+basePath: /
+definitions:
+  models.Friendship:
+    properties:
+      friend_id:
+        type: integer
+      id:
+        type: integer
+      status:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  models.Task:
+    properties:
+      assigned_to:
+        type: integer
+      description:
+        type: string
+      due_date:
+        type: string
+      id:
+        type: integer
+      start_date:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      password:
+        type: string
+      role:
+        description: admin - user
+        type: string
+      username:
+        type: string
+    type: object
+  models.UserStats:
+    properties:
+      completed_tasks:
+        type: integer
+      pending_tasks:
+        type: integer
+      total_tasks:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: API for managing tasks and users
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Task Management API
+  version: "1.0"
+paths:
+  /friends:
+    post:
+      consumes:
+      - application/json
+      description: Create a new friendship request and set status to pending
+      parameters:
+      - description: Friendship info
+        in: body
+        name: friendship
+        required: true
+        schema:
+          $ref: '#/definitions/models.Friendship'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Friendship'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Create a new friendship request
+      tags:
+      - friendship
+  /friends/accept:
+    post:
+      consumes:
+      - application/json
+      description: Accept a friendship request by updating status to accepted
+      parameters:
+      - description: Friendship info
+        in: body
+        name: friendship
+        required: true
+        schema:
+          $ref: '#/definitions/models.Friendship'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Friendship'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Accept a friendship request
+      tags:
+      - friendship
+  /friends/reject:
+    post:
+      consumes:
+      - application/json
+      description: Reject a friendship request by updating status to rejected
+      parameters:
+      - description: Friendship info
+        in: body
+        name: friendship
+        required: true
+        schema:
+          $ref: '#/definitions/models.Friendship'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Friendship'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Reject a friendship request
+      tags:
+      - friendship
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Login a user and return a JWT token
+      parameters:
+      - description: User info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Login a user
+      tags:
+      - auth
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with username, password, role, and email
+      parameters:
+      - description: User info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Register a new user
+      tags:
+      - auth
+  /tasks:
+    get:
+      consumes:
+      - application/json
+      description: Get all tasks assigned to the user or created by the admin
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Task'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get tasks for the user
+      tags:
+      - tasks
+    post:
+      consumes:
+      - application/json
+      description: Create a new task and assign it to a user
+      parameters:
+      - description: Task info
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/models.Task'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Task'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Create a new task
+      tags:
+      - tasks
+  /tasks/{task_id}:
+    delete:
+      description: Delete a task by task ID
+      parameters:
+      - description: Task ID
+        in: path
+        name: task_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Delete a task
+      tags:
+      - tasks
+    put:
+      consumes:
+      - application/json
+      description: Update an existing task with new details
+      parameters:
+      - description: Task ID
+        in: path
+        name: task_id
+        required: true
+        type: integer
+      - description: Task info
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/models.Task'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Task'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Update an existing task
+      tags:
+      - tasks
+  /user/stats:
+    get:
+      consumes:
+      - application/json
+      description: Get statistics of tasks assigned to the user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserStats'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get user stats
+      tags:
+      - stats
+swagger: "2.0"
